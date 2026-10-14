@@ -1,5 +1,7 @@
 import uuid
+from datetime import date
 
+from django.conf import settings
 from django.db import models
 from django.db.models import UniqueConstraint
 from django.db.models.functions import Lower
@@ -58,6 +60,10 @@ class Book(models.Model):
     def get_absolute_url(self):
         return reverse("book-detail", args=[str(self.id)])
 
+    def display_genre(self):
+        """Create string for the genre. This is required to display genre in the Django admin interface"""
+        return ", ".join(genre.name for genre in self.genre.all()[:3])
+
 
 class BookInstance(models.Model):
     LOAN_STATUS = (
@@ -82,6 +88,15 @@ class BookInstance(models.Model):
         help_text="Book availability",
     )
     book = models.ForeignKey(Book, on_delete=models.RESTRICT, null=True)
+    imprint = models.CharField(max_length=200, blank=True, null=True)
+    borrower = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    @property
+    def is_overdue(self):
+        """Determines if the book is overdue based on due date and current date."""
+        return bool(self.due_back and date.today() > self.due_back)
 
     class Meta:
         ordering = ["due_back"]  # noqa: RUF012
