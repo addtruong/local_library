@@ -100,6 +100,7 @@ class BookInstance(models.Model):
 
     class Meta:
         ordering = ["due_back"]  # noqa: RUF012
+        permissions = (("can_mark_returned", "Set book as returned"),)
 
     def __str__(self):
         """String for representing the BookInstance object."""

@@ -18,4 +18,5 @@
     <li><strong>Genres:</strong> {{ num_genres }}</li>
     <li><strong>Books containing Harry:</strong> {{ books_containing_harry.count }}</li>
   </ul>
+  <p>You have visited this page {{ num_visits }} time{{ num_visits|pluralize }}.</p>
 {% endblock %}
